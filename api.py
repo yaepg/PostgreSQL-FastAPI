@@ -112,18 +112,21 @@ def borrar_usuario(id:int):
     return {"status_borrado", "ok"}
 
 @app.post("/fotos")
-async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:UploadFile=File(...)):
+async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(None), foto:UploadFile=File(None), opcion_1:bool=Form(None)):
     print("titulo:", titulo)
     print("descripcion:", descripcion)
 
-    home_usuario=os.path.expanduser("~")
-    nombre_archivo=uuid.uuid4().hex  #generamos nombre único en formato hexadecimal
+    home_usuario=os.path.expanduser("~")      
+    nombre_archivo=uuid.uuid4().hex  # generamos nombre único en formato hexadecimal
     extension = os.path.splitext(foto.filename)[1]
-    ruta_imagen=f'{home_usuario}/fotos-ejemplo/{nombre_archivo}{extension}'
+    if opcion_1:
+        ruta_imagen=f'{home_usuario}/fotos-usuarios-vip/{nombre_archivo}{extension}'
+    else:
+        ruta_imagen=f'{home_usuario}/fotos-usuarios/{nombre_archivo}{extension}'
     print("guardando imagen en ruta:", ruta_imagen)
 
     with open(ruta_imagen,"wb") as imagen:
-        contenido = await foto.read() #read funciona de manera asyncrona
+        contenido = await foto.read() # read funciona de manera asyncrona
         imagen.write(contenido)
 
     return {"titulo":titulo, "descripcion":descripcion, "foto":foto.filename}
